@@ -139,7 +139,7 @@ def getCreditHours(course):
 def getAceList(course):
     aceListRaw = course.get('aceOutcomes')
     aceCont = AceContainer()
-    aceList = []
+    aceList = [];
     if aceListRaw is not None:
         for ace in aceListRaw:
             aceList.append(aceCont.getAce(ace))
@@ -356,15 +356,15 @@ class Course:
             if len(self.aceList) > 0:
                 query += ", " + self.aceList[0].getKeyVar()
             else:
-                query += ", NULL"
+                query += ", @ace0"
             if len(self.aceList) > 1:
                 query += ",  " + self.aceList[1].getKeyVar()
             else:
-                query += ", NULL"
+                query += ", @ace0"
             query += ");\n"
             return query
         except ValueError:
-            print("Error: " + self.title + " has 'None' attribute for NOT NULL field")
+            print("Error: " + self.title + " has 'None' attribute for 'NOT NULL' field")
             return None
 
 
