@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Course Planner</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="planner.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="main">
+    <div id="top-bar" class="row">
+        <div id="search" class="col-md-9">
+            <input id="courseSearch" type="text" placeholder="Course Search"
+                   onkeydown="if (event.keyCode == 13) { getSearchCourses(this.value) }">
+        </div>
+        <div id="major-minor" class="col-md-3">
+            <select id="major" onchange="getMajorCourses(this.value)">
+                <option>Select Major</option>
+            </select>
+            <select id="minor" onchange="getMinorCourses(this.value)">
+                <option>Select Minor</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-5">
+            <div class="row">
+                <div class="col-md-12" id="majorLink">
+                    Undergrad Info For Major:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" id="minorLink">
+                    Undergrad Info For Minor:
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="row">
+        <div id="classes" class="col-md-2 ui-droppable">
+            <h5>Major</h5>
+            <ul id="major-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </ul>
+            <h5>Minor</h5>
+            <ul id="minor-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </ul>
+            <h5>Other</h5>
+            <ul id="other-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </ul>
+        </div>
+        <div id="planner" class="col-md-6">
+            <div class="row">
+                <div class="col-md-5">
+                    <button class="pull-right" value="Add Year" onclick="addYear()">Add Year</button>
+                    <button class="pull-left" value="Remove Year" onclick="removeYear()">Remove Year</button>
+                </div>
+
+            </div>
+            <div id="years">
+                <div class="row" id="2018">
+                    <div class="outer col-md-4">
+                        <h6>Fall 2018</h6>
+                        <div class="dropBox" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                    </div>
+                    <div class="outer col-md-4">
+                        <h6>Spring 2019</h6>
+                        <div class="dropBox" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                    </div>
+                    <div class="outer col-md-4">
+                        <h6>Summer 2019</h6>
+                        <div class="dropBox" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="info" class="col-md-3 pull-right">
+            <div id="courseInfo">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

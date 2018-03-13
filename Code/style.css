@@ -1,0 +1,98 @@
+.main {
+    width: 100%;
+}
+
+#top-bar {
+    padding: 5px;
+    background-color: darkgray;
+}
+
+#planner {
+    border-style: dotted;
+    margin: 10px;
+}
+
+.outer {
+    min-height: 25vh;
+}
+
+.courseList {
+    border-style: solid;
+}
+
+.dropBox {
+    min-height: 25vh;
+    border-style: solid;
+    width: 100%;
+}
+
+ul, li {
+    list-style:none;
+    padding:0;
+    margin:0;
+    white-space:nowrap;
+    max-height: 23vh;
+}
+
+ul{
+    overflow-y:scroll;
+    min-height: 23vh;
+    margin: 6px
+}
+
+h5 {
+    margin: 5px;
+}
+
+select {
+    outline: none;
+    display: inline-block;
+    padding: 5px;
+    border-radius: 10px
+}
+
+
+
+/*#major-list .ui-selecting { background: #FECA40; }*/
+/*#major-list .ui-selected { background: #F39814; color: white; }*/
+
+#classes {
+    margin: 5px;
+    min-width: 20vw;
+}
+
+h5 {
+    text-align: center;
+    border: solid;
+    border-radius: 25px;
+    padding: 3px
+}
+
+#content {
+    margin: 10px;
+    width: 100%
+}
+
+.info {
+    height: 15px;
+    float: right;
+    margin: 3px
+}
+
+#info {
+    border-style: solid;
+    margin: 10px
+}
+
+#courseInfo h6 {
+    display: inline-block;
+}
+
+#courseSearch {
+    outline: none;
+    padding: 5px;
+    margin-left: 40px;
+    border-radius: 25px;
+}
+
+
