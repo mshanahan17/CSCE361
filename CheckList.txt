@@ -1,0 +1,5 @@
+Requirement 1: User should have some sort of user interface to use for their planning
+Requirement 2: User should be able to select a major and minor
+Requirement 3: User should be able to search for additional courses to fill their board with
+Requirement 4: The user should have a way to get more info about a specific course
+Requirement 5: Ace tracker (not complete)
