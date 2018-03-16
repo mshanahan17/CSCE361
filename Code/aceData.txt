@@ -1,0 +1,11 @@
+0; This is not an Ace course.
+1; Write texts, in various forms, with an identified purpose, that respond to specific audience needs, integrate research or existing knowledge, and use applicable documentation and appropriate conventions of format and structure.
+2; Demonstrate competence in communication skills in one or more of the following ways: by making oral presentations with supporting materials, by leading and participating in problem-solving teams, by employing communication skills for developing and maintaining professional and personal relationships, or by producing and/or interpreting visual information.
+3; Use mathematical, computational, statistical, logical, or other formal reasoning to solve problems, draw inferences, justify conclusions,  and determine reasonableness.
+4; Use scientific methods and knowledge to pose questions, frame hypotheses, interpret data, and evaluate whether conclusions about the natural and physical world are reasonable.
+5; Use knowledge, historical perspectives, analysis, interpretation, critical evaluation, and the standards of evidence appropriate to the humanities to address problems and issues.
+6; Use knowledge, theories, and research methods appropriate to the social sciences to understand and evaluate social systems or human behaviors.
+7; Use knowledge, theories, or methods appropriate to the arts to understand their context and significance.
+8; Use knowledge, theories, and analysis to explain ethical principles and their importance in society.
+9; Exhibit global awareness or knowledge of human diversity through analysis of an issue.
+10; Generate a creative or scholarly product that requires broad knowledge, appropriate technical proficiency, information collection, synthesis, interpretation, presentation, and reflection.
