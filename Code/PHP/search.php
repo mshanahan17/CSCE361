@@ -6,8 +6,11 @@
 
 	$sql = new mysqli("cse.unl.edu", "apages", "Wtpt4R", "apages");
 
-	$qry = "SELECT Course.title AS title, description, prerequisite, creditHours, courseNum, subjectId ".
-			"FROM Course JOIN Subject ON Course.subject_fk = Subject.subject_key WHERE UPPER(subjectId) ".
+	$qry = "SELECT c.title, c.description, c.prerequisite, c.creditHours, c.courseNum, c.subjectId, a1.aceNum, a2.aceNum ".
+			"FROM Course c JOIN Subject ON c.subject_fk = Subject.subject_key ".
+			"LEFT JOIN Ace AS ace1 ON c.ace_1_fk = a1.ace_key ".
+			"LEFT JOIN Ace AS ace2 ON c.ace_2_fk = a2.ace_key ".
+			"WHERE UPPER(subjectId) ".
 			"LIKE UPPER(?) OR UPPER(Course.title) LIKE UPPER(?) OR UPPER(CONCAT(subjectID,Course.courseNum)) LIKE UPPER(?)";
 	$qry = $sql->prepare($qry);
 	$qry->bind_param('sss', $search, $search, $search);
@@ -19,12 +22,14 @@
 
 	while ($row = mysqli_fetch_assoc($result)) {
 		$rows[] = array(
-			'title' => $row['title'],
-			'description' => $row['description'],
-			'prerequisite' => $row['prerequisite'],
-			'creditHours' => $row['creditHours'],
-			'courseNum' => $row['courseNum'],
-			'courseName' => $row['subjectId']
+			'title' => $row['c.title'],
+			'description' => $row['c.description'],
+			'prerequisite' => $row['c.prerequisite'],
+			'creditHours' => $row['c.creditHours'],
+			'courseNum' => $row['c.courseNum'],
+			'courseName' => $row['c.subjectId'],
+			'ace1' => $row['a1.aceNum'],
+			'ace2' => $row['a2.aceNum']
 		);
 	}
 
