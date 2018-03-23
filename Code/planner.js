@@ -1,10 +1,23 @@
-
 majorCourses = [];
 minorCourses = [];
 otherCourses = [];
 majors = [];
 minors = [];
-$(document).ready(function(){
+
+var aces = {
+    ace1: null,
+    ace2: null,
+    ace3: null,
+    ace4: null,
+    ace5: null,
+    ace6: null,
+    ace7: null,
+    ace8: null,
+    ace9: null,
+    ace10: null
+}
+
+$(document).ready(function () {
 
     $.ajax({
         url: "majors.php",
@@ -13,10 +26,10 @@ $(document).ready(function(){
         success: function (response) {
             majors = response;
             var options = "";
-            $.each(response, function(k, v) {
+            $.each(response, function (k, v) {
 
-                if(k.length > 25){
-                    var str = k.substr(0,24) + "...";
+                if (k.length > 25) {
+                    var str = k.substr(0, 24) + "...";
                 }
                 else {
                     var str = k;
@@ -38,9 +51,9 @@ $(document).ready(function(){
             minors = response;
             var minorOptions = "";
 
-            $.each(response, function(k, v) {
-                if(k.length > 25){
-                    var str = k.substr(0,24) + "...";
+            $.each(response, function (k, v) {
+                if (k.length > 25) {
+                    var str = k.substr(0, 24) + "...";
                 }
                 else {
                     var str = k;
@@ -55,6 +68,7 @@ $(document).ready(function(){
     });
 
 })
+
 function getMajorCourses(value) {
 
     var arr = [];
@@ -95,7 +109,7 @@ function getMinorCourses(value) {
     });
 
     $("#miLink").remove();
-    $("#minorLink").append("<a href='" + minors[value].uri + "' id='miLink' target='_blank'> " + value + " </a>")
+    $("#minorLink").append("<a href='" + minors[value].uri + "' id='miLink' target='_blank'> " + value + " </a>");
 
     arr.sort();
     $.ajax({
@@ -119,11 +133,17 @@ function getMinorCourses(value) {
 
 function getSearchCourses(selectedValue) {
 
+    if (selectedValue.toUpperCase() == "ALPACA") {
+        $("body").html("<img src='alpaca.jpg' height='100%'>");
+    }
     var arr = selectedValue.split(" ");
 
-    if(!isNaN(arr[1])) {
+    var str = "";
+    if (arr.length > 1 && !isNaN(arr[1].substring(0, 1))) {
+        arr[1] = arr[1].toUpperCase();
+
         $.ajax({
-            url: "searchSpecificCourse.php",
+            url: "searchCourse.php",
             dataType: "json",
             type: 'post',
             data: {
@@ -166,6 +186,9 @@ function getSearchCourses(selectedValue) {
 }
 
 function removeYear() {
+    if ($('#years').children().last().children().children().children().length > 0) {
+        return;
+    }
     $('#years').children().last().remove();
 }
 
@@ -173,14 +196,14 @@ function addYear() {
     var id = $('#years').children().last().attr('id');
     var numYears = $('#years').children().length;
 
-    if(numYears > 12){
+    if (numYears > 12) {
         alert("Max number of years reached!");
         return;
     }
-    if(isNaN(id)){
+    if (isNaN(id)) {
         id = 2018;
     }
-    else{
+    else {
         id = parseInt(id) + 1;
     }
 
@@ -191,19 +214,88 @@ function addYear() {
         "                        <div class='dropBox' ondrop='drop(event)' ondragover='allowDrop(event)'></div>\n" +
         "                    </div>\n" +
         "                    <div class='outer col-md-4'>\n" +
-        "                        <h6>Spring " + (id+1) + "</h6>\n" +
+        "                        <h6>Spring " + (id + 1) + "</h6>\n" +
         "                        <div class='dropBox' ondrop='drop(event)' ondragover='allowDrop(event)'></div>\n" +
         "                    </div>\n" +
         "                    <div class='outer col-md-4'>\n" +
-        "                        <h6>Summer " + (id+1) + "</h6>\n" +
+        "                        <h6>Summer " + (id + 1) + "</h6>\n" +
         "                        <div class='dropBox' ondrop='drop(event)' ondragover='allowDrop(event)'></div>\n" +
         "                    </div>\n" +
-        "                </div>"
+        "                </div>";
 
     $('#years').append(str);
 }
 
 
+function courseInfo(element) {
+    var id = element.id;
+    id = id.split(" ");
+
+    if (id[0] === "major") {
+        var course = majorCourses[id[2]].courseName + " " + majorCourses[id[2]].courseNum;
+        var title = majorCourses[id[2]].title;
+        var description = majorCourses[id[2]].description;
+        var prereqs = majorCourses[id[2]].prerequisite;
+        var hours = majorCourses[id[2]].creditHours;
+        var ace1 = majorCourses[id[2]].ace1;
+        var ace2 = majorCourses[id[2]].ace2;
+    }
+    else if (id[0] === "minor") {
+        var course = minorCourses[id[2]].courseName + " " + minorCourses[id[2]].courseNum;
+        var title = minorCourses[id[2]].title;
+        var description = minorCourses[id[2]].description;
+        var prereqs = minorCourses[id[2]].prerequisite;
+        var hours = minorCourses[id[2]].creditHours;
+        var ace1 = minorCourses[id[2]].ace1;
+        var ace2 = minorCourses[id[2]].ace2;
+    }
+    else {
+        var course = otherCourses[id[2]].courseName + " " + otherCourses[id[2]].courseNum;
+        var title = otherCourses[id[2]].title;
+        var description = otherCourses[id[2]].description;
+        var prereqs = otherCourses[id[2]].prerequisite;
+        var hours = otherCourses[id[2]].creditHours;
+        var ace1 = otherCourses[id[2]].ace1;
+        var ace2 = otherCourses[id[2]].ace2;
+    }
+
+    if(ace2 === "0"){
+        var aceStr = ace1;
+    }
+    if(ace1 === "0"){
+        var aceStr = "";
+    }
+    if(ace1 != 0 && ace2 != 0){
+        var aceStr = ace1 + ", " + ace2;
+    }
+    var str = " <h6>Course:</h6>" + " " + course + "<br>\n" +
+        "                <h6>Title: </h6>" + " " + title + "<br>\n" +
+        "                <h6>Credit Hours: </h6>" + " " + hours + "<br>\n" +
+        "                <h6>ACE: </h6>" + " " + aceStr + "<br>\n" +
+        "                <h6>Pre-Requisites: </h6><br>" + prereqs + "<br>\n" +
+        "                <h6>Description: </h6><br>" + description + "<br>";
+
+    $('#courseInfo').empty();
+    $('#courseInfo').append(str);
+}
+
+
+function makeCourseList(response, prefix) {
+    var list = "";
+    var count = 0;
+
+    $.each(response, function (k, v) {
+        var courseName = v.courseName + " " + v.courseNum;
+        list += "<li draggable='true' class='courseList' ondragstart='drag(event)' id='" + prefix + " " + count + "' value='"+ courseName +"'>" +
+            courseName + "<img draggable='false' id='" + prefix + " img " + count++ + "' class='info' src='Info.png' " +
+            "onclick='courseInfo(this)'></li>\n";
+
+    });
+
+    return list;
+}
+
+//functions to allow drap and drop functionality on the courses
 function allowDrop(ev) {
     ev.preventDefault();
 }
@@ -215,59 +307,140 @@ function drag(ev) {
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
-}
+    var element = document.getElementById(data);
 
-function courseInfo(element){
-    var id = element.id;
-    id = id.split(" ");
+    var courseName = element.getAttribute("value");
 
-    if(id[0] === "major"){
-        var course = majorCourses[id[2]].courseName + " " + majorCourses[id[2]].courseNum;
-        var title = majorCourses[id[2]].title;
-        var description = majorCourses[id[2]].description;
-        var prereqs = majorCourses[id[2]].prerequisite;
-        var hours = majorCourses[id[2]].creditHours;
+    if(ev.target.className === "dropBox"){
+        if($(".dropBox").children.length > 5){
+            return false;
+        }
     }
-    else if(id[0] === "minor"){
-        var course = minorCourses[id[2]].courseName + " " + minorCourses[id[2]].courseNum;
-        var title = minorCourses[id[2]].title;
-        var description = minorCourses[id[2]].description;
-        var prereqs = minorCourses[id[2]].prerequisite;
-        var hours = minorCourses[id[2]].creditHours;
+    if (ev.target.className === "courseList") {
+        if(ev.target.parentNode.className != "dropBox"){
+            var dragElement = document.getElementById(data);
+            ev.target.after(dragElement);
+            sortList(ev.target.parentNode.id);
+
+            var course = courseName;
+            console.log("Drop course: " + course);
+            removeFromAce(course);
+        }
+        else {
+            var course = data.split(" ");
+
+            if(course[0] === "major"){
+                var aceOptions = getAce(course[1], majorCourses);
+            }
+            else if(course[0] === "minor"){
+                var aceOptions = getAce(course[1], minorCourses);
+            }
+            else {
+                var aceOptions = getAce(course[1], otherCourses);
+            }
+
+            handleAce(aceOptions, courseName);
+        }
     }
     else {
-        var course = otherCourses[id[2]].courseName + " " + otherCourses[id[2]].courseNum;
-        var title = otherCourses[id[2]].title;
-        var description = otherCourses[id[2]].description;
-        var prereqs = otherCourses[id[2]].prerequisite;
-        var hours = otherCourses[id[2]].creditHours;
+        ev.target.appendChild(document.getElementById(data));
+        var course = data.split(" ");
+
+        if(course[0] === "major"){
+            var aceOptions = getAce(course[1], majorCourses);
+        }
+        else if(course[0] === "minor"){
+            var aceOptions = getAce(course[1], minorCourses);
+        }
+        else {
+            var aceOptions = getAce(course[1], otherCourses);
+        }
+
+        handleAce(aceOptions, courseName);
+
     }
-
-
-    var str = " <h6>Course:</h6>" + " " + course + "<br>\n" +
-        "                <h6>Title: </h6>" + " " + title + "<br>\n" +
-        "                <h6>Credit Hours: </h6>" + " " + hours + "<br>\n" +
-        "                <h6>Pre-Requisites: </h6><br>" + prereqs + "<br>\n" +
-        "                <h6>Description: </h6><br>" + description + "<b"
-
-    $('#courseInfo').empty();
-    $('#courseInfo').append(str);
 }
 
-
-function makeCourseList(response, prefix){
-    var list = "";
-    var count = 0;
-    $.each(response, function(k, v) {
-        list+=  "<li draggable='true' ondragstart='drag(event)' id='" + prefix + " " + count + "'>" +
-            "<div class='courseList'>" +
-            v.courseName + " " + v.courseNum + "<img draggable='false' id='" + prefix + " img " + count++ + "' class='info' src='Info.png' " +
-            "onclick='courseInfo(this)'> </div></li>\n"
-
-    });
-
-    return list;
+function sortList(id) {
+    var list, i, switching, b, shouldSwitch;
+    list = document.getElementById(id);
+    switching = true;
+    /* Make a loop that will continue until
+    no switching has been done: */
+    while (switching) {
+        // Start by saying: no switching is done:
+        switching = false;
+        b = list.getElementsByTagName("li");
+        // Loop through all list items:
+        for (i = 0; i < (b.length - 1); i++) {
+            // Start by saying there should be no switching:
+            shouldSwitch = false;
+            /* Check if the next item should
+            switch place with the current item: */
+            if (b[i].innerHTML.toLowerCase() > b[i + 1].innerHTML.toLowerCase()) {
+                /* If next item is alphabetically lower than current item,
+                mark as a switch and break the loop: */
+                shouldSwitch = true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            /* If a switch has been marked, make the switch
+            and mark the switch as done: */
+            b[i].parentNode.insertBefore(b[i + 1], b[i]);
+            switching = true;
+        }
+    }
 }
 
+function updateAce(){
 
+    for(var ace in aces){
+        if(aces[ace] != null){
+            var id = "#" + ace;
+            $(id).css("background-color","green");
+        }
+        if(aces[ace] === null){
+            var id = "#" + ace;
+            $(id).css("background-color","red");
+        }
+    }
+}
+
+function getAce(num, arr){
+    var ace = [];
+    ace[0] = arr[num].ace1;
+    ace[1] = arr[num].ace2;
+    return ace;
+}
+
+function handleAce(aceOptions, courseName) {
+    var aceOne = aceOptions[0];
+    var aceTwo = aceOptions[1];
+
+    if(aceOne != 0){
+        if(aceTwo != 0){
+            var choice = prompt("Which Ace should this count towards " + aceOne + " or " + aceTwo).trim();
+
+            while(choice != aceOne && choice != aceTwo){
+                choice = prompt("Incorrect input please type either " + aceOne + " or " + aceTwo);
+            }
+            var aceOne = "ace" + choice;
+        }
+        else {
+            var aceOne = "ace" + aceOne;
+        }
+        aces[aceOne] = courseName;
+        updateAce();
+    }
+}
+
+function removeFromAce(course){
+    console.log("Remove from ace: " + course);
+    for(var ace in aces){
+        if(aces[ace] === course){
+            aces[ace] = null;
+            updateAce();
+        }
+    }
+}
