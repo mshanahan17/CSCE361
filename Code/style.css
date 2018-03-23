@@ -34,6 +34,11 @@ ul, li {
     max-height: 23vh;
 }
 
+#ace div div {
+    border-style: solid;
+    background-color: red;
+}
+
 ul{
     overflow-y:scroll;
     min-height: 23vh;
