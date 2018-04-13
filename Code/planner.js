@@ -444,3 +444,26 @@ function removeFromAce(course){
         }
     }
 }
+
+function searchForAce(aceNum){
+    console.log("Search for ace: " + aceNum);  
+    $.ajax({
+            url: "aceSearch.php",
+            dataType: "json",
+            type: 'post',
+            data: {
+                search: aceNum
+            },
+            success: function (response) {
+
+                courses = response;
+                var courseList = makeCourseList(response, "search");
+                $("#other-list").empty();
+                $("#other-list").append(list);
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+    });
+}
