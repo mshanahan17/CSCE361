@@ -7,11 +7,11 @@ $qry = "SELECT c.title, c.description, c.prerequisite, c.creditHours, c.courseNu
     "FROM Course c JOIN Subject s ON c.subject_fk = s.subject_key ".
     "LEFT JOIN Ace AS a1 ON c.ace_1_fk = a1.ace_key ".
     "LEFT JOIN Ace AS a2 ON c.ace_2_fk = a2.ace_key ".
-    "WHERE aceNum1 LIKE ? ".
-    "OR aceNum2 LIKE ?;".
-
+    "WHERE UPPER(s.subjectId) LIKE UPPER(?) ".
+    "OR UPPER(c.title) LIKE UPPER(?) ".
+    "OR UPPER(CONCAT(s.subjectID,c.courseNum)) LIKE UPPER(?)";
 $qry = $sql->prepare($qry);
-$qry->bind_param('sss', $search, $search);
+$qry->bind_param('sss', $search, $search, $search);
 $qry->execute();
 $result = $qry->get_result();
 $sql->close();
