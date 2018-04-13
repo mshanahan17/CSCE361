@@ -1,24 +1,49 @@
-majorCourses = [];
-minorCourses = [];
-otherCourses = [];
-majors = [];
-minors = [];
+var majors = [];
+var minors = [];
 
-var aces = {
-    ace1: null,
-    ace2: null,
-    ace3: null,
-    ace4: null,
-    ace5: null,
-    ace6: null,
-    ace7: null,
-    ace8: null,
-    ace9: null,
-    ace10: null
+if(localStorage.getItem("aceObj") != null){
+    var aces = JSON.parse(localStorage.getItem("aceObj"));
 }
+else {
+    var aces = {
+        ace1: [],
+        ace2: [],
+        ace3: [],
+        ace4: [],
+        ace5: [],
+        ace6: [],
+        ace7: [],
+        ace8: [],
+        ace9: [],
+        ace10: []
+    }
+}
+
 
 $(document).ready(function () {
 
+    if(localStorage.getItem("schedule") != null){
+        $("#years").html(localStorage.getItem("schedule"));
+        $("#major-list").html(localStorage.getItem("major"));
+        $("#minor-list").html(localStorage.getItem("minor"));
+        $("#majorLink").html(localStorage.getItem("majorLink"));
+        $("#minorLink").html(localStorage.getItem("minorLink"));
+        $("#minor").html(localStorage.getItem("minorSel"));
+        $("#major-minor").html(localStorage.getItem("majorSel"));
+    }
+    else {
+        resetPlanner();
+    }
+
+
+    updateAce();
+
+    if(localStorage.getItem("Sel") != null){
+        $("#major-minor").html(localStorage.getItem("Sel"));
+        majors = JSON.parse(localStorage.getItem("majors"));
+        minors = JSON.parse(localStorage.getItem("minors"));
+        return;
+    }
     $.ajax({
         url: "majors.php",
         dataType: "json",
@@ -76,7 +101,7 @@ function getMajorCourses(value) {
         arr.push(v);
     });
     $("#maLink").remove();
-    $("#majorLink").append("<a href='" + majors[value].uri + "' id='maLink' target='_blank'> " + value + " </a>");
+    $("#majorLink").append("<a href='" + majors[value].uri + "' id='maLink' target='_blank'> Major Info </a>");
 
     arr.sort();
 
@@ -99,6 +124,11 @@ function getMajorCourses(value) {
             console.log(error);
         }
     });
+    var str = value;
+    if (value.length > 25) {
+        str = value.substr(0, 24) + "...";
+    }
+    $("#major option:first").attr('value',value).text(str);
 }
 
 function getMinorCourses(value) {
@@ -109,7 +139,7 @@ function getMinorCourses(value) {
     });
 
     $("#miLink").remove();
-    $("#minorLink").append("<a href='" + minors[value].uri + "' id='miLink' target='_blank'> " + value + " </a>");
+    $("#minorLink").append("<a href='" + minors[value].uri + "' id='miLink' target='_blank'>Minor Info</a>");
 
     arr.sort();
     $.ajax({
@@ -129,16 +159,25 @@ function getMinorCourses(value) {
             console.log(error);
         }
     });
+    var str = value;
+    if (value.length > 25) {
+        str = value.substr(0, 24) + "...";
+    }
+    $("#minor option:first").attr('value',value).text(str);
 }
 
 function getSearchCourses(selectedValue) {
+
+    if(selectedValue === null || selectedValue === ""){
+        alert("Search Field Is Empty");
+        return;
+    }
 
     if (selectedValue.toUpperCase() == "ALPACA") {
         $("body").html("<img src='alpaca.jpg' height='100%'>");
     }
     var arr = selectedValue.split(" ");
 
-    var str = "";
     if (arr.length > 1 && !isNaN(arr[1].substring(0, 1))) {
         arr[1] = arr[1].toUpperCase();
 
@@ -172,7 +211,6 @@ function getSearchCourses(selectedValue) {
             },
             success: function (response) {
 
-                otherCourses = response;
                 var list = makeCourseList(response, "search");
                 $("#other-list").empty();
                 $("#other-list").append(list);
@@ -185,18 +223,91 @@ function getSearchCourses(selectedValue) {
     }
 }
 
+function getCourseInfo(courseElement){
+    var courseName1 = courseElement.id;
+    var arr = courseName1.split(" ");
+
+    $.ajax({
+        url: "searchCourse.php",
+        dataType: "json",
+        type: 'post',
+        data: {
+            search: JSON.stringify(arr)
+        },
+        success: function (response) {
+            console.log(response);
+            var course = response[0].courseName + " " + response[0].courseNum;
+            var title = response[0].title;
+            var description = response[0].description;
+            var prereqs = response[0].prerequisite;
+            var hours = response[0].creditHours;
+            var ace1 = response[0].ace1;
+            var ace2 = response[0].ace2;
+            if(ace2 === "0"){
+                var aceStr = ace1;
+            }
+            if(ace1 === "0"){
+                var aceStr = "";
+            }
+            if(ace1 != 0 && ace2 != 0){
+                var aceStr = ace1 + ", " + ace2;
+            }
+            var str = " <h6>Course:</h6>" + " " + course + "<br>\n" +
+                "                <h6>Title: </h6>" + " " + title + "<br>\n" +
+                "                <h6>Credit Hours: </h6>" + " " + hours + "<br>\n" +
+                "                <h6>ACE: </h6>" + " " + aceStr + "<br>\n" +
+                "                <h6>Pre-Requisites: </h6><br>" + prereqs + "<br>\n" +
+                "                <h6>Description: </h6><br>" + description + "<br>";
+
+            $('#courseInfo').empty();
+            $('#courseInfo').append(str).hide().fadeIn(2500);
+
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
+function getAceInfo(courseElement){
+    var courseName1 = courseElement.id;
+    var arr = courseName1.split(" ");
+    arr.splice(0,1);
+    courseName1 = arr[0] + " " + arr[1];
+
+    $.ajax({
+        url: "searchCourse.php",
+        dataType: "json",
+        type: 'post',
+        data: {
+            search: JSON.stringify(arr)
+        },
+        success: function (response) {
+
+            var ace = [response[0].ace1,response[0].ace2];
+            handleAce(ace, courseName1);
+
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
 function removeYear() {
     if ($('#years').children().last().children().children().children().length > 0) {
         return;
     }
-    $('#years').children().last().remove();
+    $('#years').children().last().fadeOut(1000, function () {
+        this.remove();
+    });
 }
 
 function addYear() {
     var id = $('#years').children().last().attr('id');
     var numYears = $('#years').children().length;
 
-    if (numYears > 12) {
+    if (numYears > 5) {
         alert("Max number of years reached!");
         return;
     }
@@ -224,71 +335,18 @@ function addYear() {
         "                </div>";
 
     $('#years').append(str);
-}
-
-
-function courseInfo(element) {
-    var id = element.id;
-    id = id.split(" ");
-
-    if (id[0] === "major") {
-        var course = majorCourses[id[2]].courseName + " " + majorCourses[id[2]].courseNum;
-        var title = majorCourses[id[2]].title;
-        var description = majorCourses[id[2]].description;
-        var prereqs = majorCourses[id[2]].prerequisite;
-        var hours = majorCourses[id[2]].creditHours;
-        var ace1 = majorCourses[id[2]].ace1;
-        var ace2 = majorCourses[id[2]].ace2;
-    }
-    else if (id[0] === "minor") {
-        var course = minorCourses[id[2]].courseName + " " + minorCourses[id[2]].courseNum;
-        var title = minorCourses[id[2]].title;
-        var description = minorCourses[id[2]].description;
-        var prereqs = minorCourses[id[2]].prerequisite;
-        var hours = minorCourses[id[2]].creditHours;
-        var ace1 = minorCourses[id[2]].ace1;
-        var ace2 = minorCourses[id[2]].ace2;
-    }
-    else {
-        var course = otherCourses[id[2]].courseName + " " + otherCourses[id[2]].courseNum;
-        var title = otherCourses[id[2]].title;
-        var description = otherCourses[id[2]].description;
-        var prereqs = otherCourses[id[2]].prerequisite;
-        var hours = otherCourses[id[2]].creditHours;
-        var ace1 = otherCourses[id[2]].ace1;
-        var ace2 = otherCourses[id[2]].ace2;
-    }
-
-    if(ace2 === "0"){
-        var aceStr = ace1;
-    }
-    if(ace1 === "0"){
-        var aceStr = "";
-    }
-    if(ace1 != 0 && ace2 != 0){
-        var aceStr = ace1 + ", " + ace2;
-    }
-    var str = " <h6>Course:</h6>" + " " + course + "<br>\n" +
-        "                <h6>Title: </h6>" + " " + title + "<br>\n" +
-        "                <h6>Credit Hours: </h6>" + " " + hours + "<br>\n" +
-        "                <h6>ACE: </h6>" + " " + aceStr + "<br>\n" +
-        "                <h6>Pre-Requisites: </h6><br>" + prereqs + "<br>\n" +
-        "                <h6>Description: </h6><br>" + description + "<br>";
-
-    $('#courseInfo').empty();
-    $('#courseInfo').append(str);
+    $('#' + id).hide().fadeIn(2000);
 }
 
 
 function makeCourseList(response, prefix) {
     var list = "";
-    var count = 0;
 
     $.each(response, function (k, v) {
         var courseName = v.courseName + " " + v.courseNum;
-        list += "<li draggable='true' class='courseList' ondragstart='drag(event)' id='" + prefix + " " + count + "' value='"+ courseName +"'>" +
-            courseName + "<img draggable='false' id='" + prefix + " img " + count++ + "' class='info' src='Info.png' " +
-            "onclick='courseInfo(this)'></li>\n";
+        list += "<li draggable='true' class='courseList' ondragstart='drag(event)' id='" + prefix + " " + courseName + "' value='"+ courseName +"'>" +
+            courseName + "<img draggable='false' id='" + courseName + "' class='info' src='Info.png' " +
+            "onclick='getCourseInfo(this)'></li>\n";
 
     });
 
@@ -327,36 +385,23 @@ function drop(ev) {
             removeFromAce(course);
         }
         else {
-            var course = data.split(" ");
-
-            if(course[0] === "major"){
-                var aceOptions = getAce(course[1], majorCourses);
-            }
-            else if(course[0] === "minor"){
-                var aceOptions = getAce(course[1], minorCourses);
-            }
-            else {
-                var aceOptions = getAce(course[1], otherCourses);
-            }
-
-            handleAce(aceOptions, courseName);
+            getAceInfo(element);
         }
+    }
+    else if(ev.target.className === "drop1" || ev.target.className === "drop2"
+            || ev.target.className === "drop3"){
+
+        var dragElement = document.getElementById(data);
+        ev.target.append(dragElement);
+        sortList(ev.target.id);
+
+        var course = courseName;
+        console.log("Drop course: " + course);
+        removeFromAce(course);
     }
     else {
         ev.target.appendChild(document.getElementById(data));
-        var course = data.split(" ");
-
-        if(course[0] === "major"){
-            var aceOptions = getAce(course[1], majorCourses);
-        }
-        else if(course[0] === "minor"){
-            var aceOptions = getAce(course[1], minorCourses);
-        }
-        else {
-            var aceOptions = getAce(course[1], otherCourses);
-        }
-
-        handleAce(aceOptions, courseName);
+        getAceInfo(element);
 
     }
 }
@@ -396,22 +441,15 @@ function sortList(id) {
 function updateAce(){
 
     for(var ace in aces){
-        if(aces[ace] != null){
+        if(aces[ace].length > 0){
             var id = "#" + ace;
-            $(id).css("background-color","green");
+            $(id).css("background-color","rgba(39,255,28,0.69)");
         }
-        if(aces[ace] === null){
+        if(aces[ace].length === 0){
             var id = "#" + ace;
-            $(id).css("background-color","red");
+            $(id).css("background-color","rgba(255,0,0,.8)");
         }
     }
-}
-
-function getAce(num, arr){
-    var ace = [];
-    ace[0] = arr[num].ace1;
-    ace[1] = arr[num].ace2;
-    return ace;
 }
 
 function handleAce(aceOptions, courseName) {
@@ -419,7 +457,19 @@ function handleAce(aceOptions, courseName) {
     var aceTwo = aceOptions[1];
 
     if(aceOne != 0){
+        var param = aces["ace" + aceOne];
+        for(var i = 0; i < param.length; i++){
+            if(param[i] === courseName){
+                return;
+            }
+        }
         if(aceTwo != 0){
+            param = aces["ace" + aceTwo];
+            for(var i = 0; i < param.length; i++){
+                if(param[i] === courseName){
+                    return;
+                }
+            }
             var choice = prompt("Which Ace should this count towards " + aceOne + " or " + aceTwo).trim();
 
             while(choice != aceOne && choice != aceTwo){
@@ -430,7 +480,7 @@ function handleAce(aceOptions, courseName) {
         else {
             var aceOne = "ace" + aceOne;
         }
-        aces[aceOne] = courseName;
+        aces[aceOne].push(courseName);
         updateAce();
     }
 }
@@ -438,31 +488,120 @@ function handleAce(aceOptions, courseName) {
 function removeFromAce(course){
     console.log("Remove from ace: " + course);
     for(var ace in aces){
-        if(aces[ace] === course){
-            aces[ace] = null;
-            updateAce();
+        for(var i = 0; i < aces[ace].length; i++){
+            if(aces[ace][i] === course){
+                aces[ace].splice(i,1);
+                updateAce();
+            }
         }
     }
 }
 
+function saveSchedule(){
+    var schedule = $("#years").html();
+    var major = $("#major-list").html();
+    var minor = $("#minor-list").html();
+    var majlink = $("#majorLink").html();
+    var minlink = $("#minorLink").html();
+    var majorSel = $("#major-minor").html();
+
+    // Store Content
+    localStorage.setItem("aceObj", JSON.stringify(aces));
+    localStorage.setItem("schedule", schedule);
+    localStorage.setItem("major", major);
+    localStorage.setItem("minor", minor);
+    localStorage.setItem("majorLink", majlink);
+    localStorage.setItem("minorLink", minlink);
+    localStorage.setItem("Sel", majorSel);
+    localStorage.setItem("majors", JSON.stringify(majors));
+    localStorage.setItem("minors", JSON.stringify(minors));
+}
+
+function resetPlanner(){
+    var string = "<div class=\"row\" id=\"2018\">\n" +
+        "<div class=\"outer col-md-4\">\n" +
+        "<h6>Fall 2018</h6>\n" +
+        "<div class=\"dropBox\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"></div>\n" +
+        "</div>\n" +
+        "<div class=\"outer col-md-4\">\n" +
+        "<h6>Spring 2019</h6>\n" +
+        "<div class=\"dropBox\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"></div>\n" +
+        "</div>\n" +
+        "<div class=\"outer col-md-4\">\n" +
+        "<h6>Summer 2019</h6>\n" +
+        "<div class=\"dropBox\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"></div>\n" +
+        "</div>\n" +
+        "</div>";
+
+    $("#years").empty();
+    $("#years").append(string);
+
+    aces = {
+        ace1: [],
+        ace2: [],
+        ace3: [],
+        ace4: [],
+        ace5: [],
+        ace6: [],
+        ace7: [],
+        ace8: [],
+        ace9: [],
+        ace10: []
+    }
+
+    updateAce();
+}
+
+
+function exportPDF(){
+
+    $("#years").css("background-color", "white");
+    $("#years").css("width", "1000px");
+
+
+
+    var pdf = new jsPDF();
+    pdf.internal.scaleFactor = .5;
+    var elements = $("#years");
+
+
+    var i = 0;
+    var recursiveAddHtml = function () {
+        if (i < elements.length) {
+            var x = 0, y = i * 20;
+            pdf.addHTML(elements.get(i), x, y, function () {
+                i++;
+                recursiveAddHtml();
+            });
+        } else {
+            pdf.save("Schedule.pdf");
+        }
+    }
+
+    recursiveAddHtml();
+    $("#years").css("background-color", "");
+    $("#years").css("width", "");
+
+}
+
+
 function searchForAce(aceNum){
-    console.log("Search for ace: " + aceNum);  
     $.ajax({
-            url: "aceSearch.php",
-            dataType: "json",
-            type: 'post',
-            data: {
-                search: aceNum
-            },
-            success: function (response) {
+        url: "aceSearch.php",
+        dataType: "json",
+        type: 'post',
+        data: {
+            search: aceNum
+        },
+        success: function (response) {
 
-                var courseList = makeCourseList(response, "search");
-                $("#other-list").empty();
-                $("#other-list").append(courseList);
+            var courseList = makeCourseList(response, "search");
+            $("#other-list").empty();
+            $("#other-list").append(courseList);
 
-            },
-            error: function (error) {
-                console.log(error);
-            }
+        },
+        error: function (error) {
+            console.log(error);
+        }
     });
 }
