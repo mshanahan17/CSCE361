@@ -456,10 +456,9 @@ function searchForAce(aceNum){
             },
             success: function (response) {
 
-                courses = response;
                 var courseList = makeCourseList(response, "search");
                 $("#other-list").empty();
-                $("#other-list").append(list);
+                $("#other-list").append(courseList);
 
             },
             error: function (error) {
