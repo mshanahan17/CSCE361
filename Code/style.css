@@ -2,22 +2,25 @@
     width: 100%;
 }
 
+body {
+    background-color: rgba(201,191,183,0.69);
+}
+
+
 #top-bar {
     padding: 5px;
-    background-color: darkgray;
+    background-color: rgba(45,41,41,0.76);
 }
 
 #planner {
-    border-style: dotted;
+    background: url(nebraska.png) no-repeat top;
+    background-size: 90%;
+    min-height: 100vh;
     margin: 10px;
 }
 
 .outer {
     min-height: 25vh;
-}
-
-.courseList {
-    border-style: solid;
 }
 
 .dropBox {
@@ -36,7 +39,7 @@ ul, li {
 
 #ace div div {
     border-style: solid;
-    background-color: red;
+    background-color: rgba(235,21,8,0.69);
 }
 
 ul{
@@ -56,10 +59,6 @@ select {
     border-radius: 10px
 }
 
-
-
-/*#major-list .ui-selecting { background: #FECA40; }*/
-/*#major-list .ui-selected { background: #F39814; color: white; }*/
 
 #classes {
     margin: 5px;
@@ -85,8 +84,8 @@ h5 {
 }
 
 #info {
-    border-style: solid;
-    margin: 10px
+    margin: 10px;
+    max-height: 100vh;
 }
 
 #courseInfo h6 {
@@ -97,7 +96,54 @@ h5 {
     outline: none;
     padding: 5px;
     margin-left: 40px;
+    margin-top: 10px;
     border-radius: 25px;
 }
 
+#ace {
+    font-size: 1.25em;
+    width: 100%;
+}
 
+#first {
+    border-style: none!important;
+    background: none!important;
+}
+
+li {
+    background-color: rgba(71,69,73,0.4);
+    color: white;
+    border: solid black;
+}
+
+.col-md-1 {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#miLink {
+    font-size: 1.35em
+}
+
+#maLink {
+    font-size: 1.35em
+}
+
+a {
+    color: rgb(29,113, 255);
+}
+
+a:hover {
+    color: rgb(29,113, 200);
+}
+
+button {
+    background-color: dimgrey; /* Green */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: .95em;
+    margin-bottom: 15px;
+}
+
+button:focus {outline:0;}
